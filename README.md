@@ -21,6 +21,7 @@ A professional-grade **Intrusion Detection System** built in Python that monitor
 - **Location Analysis**: Geographic distribution of threats
 - **Statistics Cards**: Quick overview of total alerts, blocked IPs, and unique sources
 - **Auto-refresh**: Dashboard updates every 5 seconds
+- This project was intentionally designed to be simple to deploy and easy to understand, making it accessible to students, early-career security engineers, and practitioners learning Intrusion Detection concepts.
 
 ## 📋 Requirements
 
