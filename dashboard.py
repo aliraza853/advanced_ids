@@ -9,11 +9,11 @@ Real-time visualization of network alerts with:
 - Auto-refresh every 5 seconds
 """
 
-
+import pandas as pd
 from dash import Dash, dash_table, dcc, html, callback
 import dash_bootstrap_components as dbc
 from dash.dependencies import Output, Input
-
+import plotly.express as px
 import plotly.graph_objects as go
 import time
 import os
