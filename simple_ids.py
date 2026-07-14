@@ -144,14 +144,60 @@ def block_ip_firewall(ip):
 # ATTACK TYPE DETECTION
 # ---------------------------
 
-def detect_attack_type(ip, port, packet):
-    ...
-    # (the function I provided)
+ip_port_history = {}
+ip_syn_counter = {}
 
-    
-# ---------------------------
-# PACKET DETECTION
-# ---------------------------
+def detect_attack_type(ip, port, packet):
+    """Detect attack type and severity"""
+
+    if ip not in ip_port_history:
+        ip_port_history[ip] = set()
+
+    ip_port_history[ip].add(port)
+
+    # Port Scan
+    if len(ip_port_history[ip]) >= 5:
+        return "Port Scan", "High"
+
+    # SSH
+    if port == 22:
+        attempts = blocked_ips.get(ip, {}).get("count", 0)
+
+        if attempts >= 5:
+            return "SSH Brute Force", "Critical"
+
+        return "SSH Login Attempt", "Medium"
+
+    # Telnet
+    if port == 23:
+        return "Telnet Login Attempt", "High"
+
+    # SMB
+    if port in [139, 445]:
+        return "SMB Enumeration", "High"
+
+    # RPC
+    if port == 135:
+        return "RPC Enumeration", "Medium"
+
+    # RDP
+    if port == 3389:
+        return "RDP Brute Force", "Critical"
+
+    # SYN Flood
+    if packet.haslayer(TCP):
+
+        flags = packet[TCP].flags
+
+        if flags == "S":
+
+            ip_syn_counter[ip] = ip_syn_counter.get(ip, 0) + 1
+
+            if ip_syn_counter[ip] >= 20:
+                return "SYN Flood", "Critical"
+
+    return "Unknown Suspicious Activity", "Low"
+
 # ---------------------------
 # PACKET DETECTION
 # ---------------------------
