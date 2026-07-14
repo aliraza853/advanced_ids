@@ -163,7 +163,7 @@ def detect_attack_type(ip, port, packet):
     if port == 22:
         attempts = blocked_ips.get(ip, {}).get("count", 0)
 
-        if attempts >= 5:
+        if attempts >= BLOCK_THRESHOLD:
             return "SSH Brute Force", "Critical"
 
         return "SSH Login Attempt", "Medium"
@@ -351,7 +351,7 @@ def print_statistics():
         if os.path.exists(ALERT_CSV):
             df = pd.read_csv(ALERT_CSV)
             total_alerts = len(df)
-            blocked_count = df['blocked'].sum() if 'blocked' in df.columns else 0
+            blocked_count = df[df["blocked"] == True]["src_ip"].nunique()
             unique_ips = df['src_ip'].nunique() if 'src_ip' in df.columns else 0
             
             logger.info(f"\n=== IDS Statistics ===")
