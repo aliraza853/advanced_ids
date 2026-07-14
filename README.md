@@ -8,8 +8,8 @@ A professional-grade **Intrusion Detection System** built in Python that monitor
 - **Real-time Network Monitoring**: Captures and analyzes TCP packets on suspicious ports
 - **Attack Type Detection**: Classifies suspicious traffic into common attack categories using rule-based heuristics
 - **Severity Detection**: Labels alerts as Low, Medium, High, or Critical based on detected activity
-- **Suspicious Activity Detection**: Identifies connection attempts to common attack vectors (SSH, Telnet, RDP, SMB)
-- **CSV Logging**: Comprehensive logging with timestamp, source IP, port, location, and block status
+- **Suspicious Activity Detection**: Identifies connection attempts to common attack vectors (SSH, Telnet, RDP, SMB, and RPC services)
+- **CSV Logging**:  Comprehensive logging with timestamp, source IP, destination port, attack type, severity, location, block status, and attempt count
 - **Automatic IP Blocking**: Blocks IPs after configurable threshold of suspicious attempts
 - **GeoIP Lookup**: Identifies geographical location of source IPs
 - **Email Notifications**: Sends alerts when IPs are blocked
@@ -21,8 +21,8 @@ A professional-grade **Intrusion Detection System** built in Python that monitor
 - **Port Distribution**: Pie chart of targeted ports
 - **Alerts Timeline**: Line chart showing alert frequency over time
 - **Location Analysis**: Geographic distribution of threats
-- - ****Attack Type Distribution** **: Classifies suspicious traffic
- - - **Severity Detection**: Label Alerts
+- **Attack Type Distribution**: Pie chart showing detected attack categories
+- **Severity Distribution**: Bar chart showing alert severity levels
 - **Statistics Cards**: Quick overview of total alerts, blocked IPs, and unique sources
 - **Auto-refresh**: Dashboard updates every 5 seconds
 - This project was intentionally designed to be simple to deploy and easy to understand, making it accessible to students, early-career security engineers, and practitioners learning Intrusion Detection concepts.
@@ -130,14 +130,12 @@ Press `Ctrl+C` in the terminal running `simple_ids.py`
 
 ### alerts.csv
 CSV file containing all detected alerts:
-```
+
 ```csv
 timestamp,src_ip,dst_port,attack_type,severity,location,blocked,attempt_count
-2026-07-14 10:30:45,192.168.1.100,22,SSH Login Attempt,Medium,United States New York,False,1
-2026-07-14 10:31:12,192.168.1.100,22,SSH Brute Force,Critical,United States New York,True,3
-2026-07-14 10:32:02,192.168.1.101,445,SMB Enumeration,High,United Kingdom London,False,1
-```
-
+2026-07-14 10:30:45,192.168.1.100,22,SSH Login Attempt,Medium,"United States, New York",False,1
+2026-07-14 10:31:12,192.168.1.100,22,SSH Brute Force,Critical,"United States, New York",True,3
+2026-07-14 10:32:02,192.168.1.101,445,SMB Enumeration,High,"United Kingdom, London",False,1
 ```
 
 ### ids.log
@@ -297,4 +295,4 @@ For issues, questions, or suggestions:
 
 **Created with ❤️ for cybersecurity enthusiasts and professionals**
 
-Last Updated: January 2024
+Last Updated: January 2026
