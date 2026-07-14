@@ -1,13 +1,13 @@
 # Advanced Python Intrusion Detection System (IDS)
 
-A professional-grade **Intrusion Detection System** built in Python that monitors network traffic, detects suspicious activity, logs alerts, and provides real-time visualization through a web dashboard.
+**A professional-grade Intrusion Detection System (IDS) built in Python that monitors network traffic, detects suspicious activity, classifies attacks using rule-based heuristics, logs alerts, and provides real-time visualization through an interactive web dashboard.**
 
 ## 🎯 Features
 
 ### Core Functionality
 - **Real-time Network Monitoring**: Captures and analyzes TCP packets on suspicious ports
 - **Attack Type Detection**: Classifies suspicious traffic into common attack categories using rule-based heuristics
-- **Severity Detection**: Labels alerts as Low, Medium, High, or Critical based on detected activity
+- **Severity Classification**: Labels alerts as Low, Medium, High, or Critical based on detected activity
 - **Suspicious Activity Detection**: Identifies connection attempts to common attack vectors (SSH, Telnet, RDP, SMB, and RPC services)
 - **CSV Logging**:  Comprehensive logging with timestamp, source IP, destination port, attack type, severity, location, block status, and attempt count
 - **Automatic IP Blocking**: Blocks IPs after configurable threshold of suspicious attempts
@@ -295,4 +295,4 @@ For issues, questions, or suggestions:
 
 **Created with ❤️ for cybersecurity enthusiasts and professionals**
 
-Last Updated: January 2026
+Last Updated: July 2026
