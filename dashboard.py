@@ -344,35 +344,36 @@ dbc.Row([
 def update_dashboard(n):
     """Update all dashboard elements"""
     df = get_alerts()
-    
+
     # Calculate statistics
     total_alerts = len(df)
     blocked_ips = df['blocked'].sum() if 'blocked' in df.columns and not df.empty else 0
     unique_sources = df['src_ip'].nunique() if 'src_ip' in df.columns and not df.empty else 0
-    
+
     # Create charts
     top_ips_fig = create_top_ips_chart(df)
     port_fig = create_port_distribution_chart(df)
     timeline_fig = create_alerts_timeline(df)
     location_fig = create_location_chart(df)
     attack_fig = create_attack_type_chart(df)
-    severity_fig = create_severity_chart(df)    
+    severity_fig = create_severity_chart(df)
+
     # Current time
     current_time = time.strftime('%H:%M:%S')
-    
-return (
-    df.to_dict('records'),
-    top_ips_fig,
-    port_fig,
-    timeline_fig,
-    location_fig,
-    attack_fig,
-    severity_fig,
-    str(total_alerts),
-    str(int(blocked_ips)),
-    str(unique_sources),
-    current_time
-)
+
+    return (
+        df.to_dict('records'),
+        top_ips_fig,
+        port_fig,
+        timeline_fig,
+        location_fig,
+        attack_fig,
+        severity_fig,
+        str(total_alerts),
+        str(int(blocked_ips)),
+        str(unique_sources),
+        current_time
+    )
 
 if __name__ == '__main__':
     print("Starting Advanced IDS Dashboard...")
