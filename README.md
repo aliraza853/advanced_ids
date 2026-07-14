@@ -6,6 +6,8 @@ A professional-grade **Intrusion Detection System** built in Python that monitor
 
 ### Core Functionality
 - **Real-time Network Monitoring**: Captures and analyzes TCP packets on suspicious ports
+- **Attack Type Detection**: Classifies suspicious traffic into common attack categories using rule-based heuristics
+- **Severity Detection**: Labels alerts as Low, Medium, High, or Critical based on detected activity
 - **Suspicious Activity Detection**: Identifies connection attempts to common attack vectors (SSH, Telnet, RDP, SMB)
 - **CSV Logging**: Comprehensive logging with timestamp, source IP, port, location, and block status
 - **Automatic IP Blocking**: Blocks IPs after configurable threshold of suspicious attempts
@@ -19,6 +21,8 @@ A professional-grade **Intrusion Detection System** built in Python that monitor
 - **Port Distribution**: Pie chart of targeted ports
 - **Alerts Timeline**: Line chart showing alert frequency over time
 - **Location Analysis**: Geographic distribution of threats
+- - ****Attack Type Distribution** **: Classifies suspicious traffic
+ - - **Severity Detection**: Label Alerts
 - **Statistics Cards**: Quick overview of total alerts, blocked IPs, and unique sources
 - **Auto-refresh**: Dashboard updates every 5 seconds
 - This project was intentionally designed to be simple to deploy and easy to understand, making it accessible to students, early-career security engineers, and practitioners learning Intrusion Detection concepts.
@@ -127,10 +131,13 @@ Press `Ctrl+C` in the terminal running `simple_ids.py`
 ### alerts.csv
 CSV file containing all detected alerts:
 ```
-timestamp,src_ip,dst_port,location,blocked,attempt_count
-2024-01-18 10:30:45,192.168.1.100,22,United States New York,False,1
-2024-01-18 10:31:12,192.168.1.100,22,United States New York,False,2
-2024-01-18 10:31:45,192.168.1.100,22,United States New York,True,3
+```csv
+timestamp,src_ip,dst_port,attack_type,severity,location,blocked,attempt_count
+2026-07-14 10:30:45,192.168.1.100,22,SSH Login Attempt,Medium,United States New York,False,1
+2026-07-14 10:31:12,192.168.1.100,22,SSH Brute Force,Critical,United States New York,True,3
+2026-07-14 10:32:02,192.168.1.101,445,SMB Enumeration,High,United Kingdom London,False,1
+```
+
 ```
 
 ### ids.log
@@ -180,6 +187,7 @@ sudo python3 simple_ids.py
 Edit the `SUSPICIOUS_PORTS` list in `simple_ids.py`:
 ```python
 SUSPICIOUS_PORTS = [22, 23, 3389, 445, 139, 135, 8080, 9000]  # Add your ports
+
 ```
 
 ## 🛡️ Security Best Practices
@@ -232,14 +240,35 @@ For high-traffic networks, consider:
 - Filtering specific interfaces: `sniff(iface='eth0', ...)`
 - Adjusting block threshold
 - Archiving old CSV files regularly
+- 
+## Attack Classification
+
+The IDS performs lightweight rule-based attack classification using observed network behaviour.
+
+| Attack Type                 | Description                                         | Severity |
+| --------------------------- | --------------------------------------------------- | -------- |
+| SSH Login Attempt           | Connection attempts to SSH (Port 22)                | Medium   |
+| SSH Brute Force             | Multiple repeated SSH attempts                      | Critical |
+| Telnet Login Attempt        | Connections targeting Telnet (Port 23)              | High     |
+| SMB Enumeration             | Access attempts to SMB services (Ports 139/445)     | High     |
+| RPC Enumeration             | Access attempts to RPC Endpoint Mapper (Port 135)   | Medium   |
+| RDP Brute Force             | Remote Desktop access attempts (Port 3389)          | Critical |
+| Port Scan                   | Connections targeting multiple monitored ports      | High     |
+| SYN Flood                   | Excessive TCP SYN packets detected                  | Critical |
+| Unknown Suspicious Activity | Suspicious traffic that does not match a known rule | Low      |
+
+Attack classification is based on predefined heuristics and is intended for educational and learning purposes rather than full signature-based intrusion detection.
+
 
 ## 🤝 Contributing
 
 Contributions are welcome! Areas for improvement:
 - Machine learning-based anomaly detection
+- Additional attack signatures
 - Database backend instead of CSV
 - Web UI improvements
 - Multi-interface monitoring
+- IPv6 support
 - Advanced threat intelligence integration
 
 ## 📝 License
