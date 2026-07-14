@@ -55,7 +55,16 @@ geoip_cache = {}  # Cache GeoIP lookups to reduce API calls
 def initialize_csv():
     """Create alerts CSV file if it doesn't exist"""
     if not os.path.exists(ALERT_CSV):
-        df = pd.DataFrame(columns=["timestamp", "src_ip", "dst_port", "location", "blocked", "attempt_count"])
+        df = pd.DataFrame(columns=[
+            "timestamp",
+            "src_ip",
+            "dst_port",
+            "attack_type",
+            "severity",
+            "location",
+            "blocked",
+            "attempt_count"
+        ])
         df.to_csv(ALERT_CSV, index=False)
         logger.info(f"Created new alerts file: {ALERT_CSV}")
 
@@ -131,6 +140,15 @@ def block_ip_firewall(ip):
     except Exception as e:
         logger.error(f"Firewall blocking failed for {ip}: {str(e)}")
 
+# ---------------------------
+# ATTACK TYPE DETECTION
+# ---------------------------
+
+def detect_attack_type(ip, port, packet):
+    ...
+    # (the function I provided)
+
+    
 # ---------------------------
 # PACKET DETECTION
 # ---------------------------
