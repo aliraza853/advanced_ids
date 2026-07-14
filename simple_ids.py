@@ -152,58 +152,149 @@ def detect_attack_type(ip, port, packet):
 # ---------------------------
 # PACKET DETECTION
 # ---------------------------
+# ---------------------------
+# PACKET DETECTION
+# ---------------------------
+
 def detect_suspicious_packet(packet):
-    """Detect and log suspicious TCP packets"""
+    """Detect suspicious packets and classify attack type"""
+
     try:
-        if packet.haslayer(TCP):
-            src_ip = packet[IP].src
-            dst_port = packet[TCP].dport
-            
-            # Skip if IP already blocked
-            if src_ip in blocked_ips and blocked_ips[src_ip]['status'] == 'blocked':
+
+        if not packet.haslayer(TCP):
+            return
+
+        src_ip = packet[IP].src
+        dst_port = packet[TCP].dport
+
+        # Ignore already blocked IPs
+        if src_ip in blocked_ips:
+            if blocked_ips[src_ip]["status"] == "blocked":
                 return
-            
-            # Check if port is suspicious
-            if dst_port in SUSPICIOUS_PORTS:
-                timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                location = get_geo(src_ip)
-                blocked = False
-                
-                # Initialize IP entry if new
-                if src_ip not in blocked_ips:
-                    blocked_ips[src_ip] = {'count': 0, 'status': 'monitoring', 'first_seen': timestamp}
-                
-                # Increment attempt count
-                blocked_ips[src_ip]['count'] += 1
-                attempt_count = blocked_ips[src_ip]['count']
-                
-                logger.info(f"[ALERT] {timestamp} - {src_ip} ({location}) -> Port {dst_port} (Attempt #{attempt_count})")
-                
-                # Log to CSV
-                df = pd.DataFrame([[timestamp, src_ip, dst_port, location, blocked, attempt_count]],
-                                columns=["timestamp", "src_ip", "dst_port", "location", "blocked", "attempt_count"])
-                df.to_csv(ALERT_CSV, mode='a', header=False, index=False)
-                
-                # Check if threshold reached
-                if attempt_count >= BLOCK_THRESHOLD:
-                    blocked = True
-                    blocked_ips[src_ip]['status'] = 'blocked'
-                    
-                    logger.warning(f"[BLOCK] {src_ip} blocked after {attempt_count} suspicious attempts")
-                    
-                    # Apply firewall rule
-                    block_ip_firewall(src_ip)
-                    
-                    # Send email notification
-                    send_email_alert(src_ip, location)
-                    
-                    # Log blocked entry
-                    df_block = pd.DataFrame([[timestamp, src_ip, dst_port, location, blocked, attempt_count]],
-                                          columns=["timestamp", "src_ip", "dst_port", "location", "blocked", "attempt_count"])
-                    df_block.to_csv(ALERT_CSV, mode='a', header=False, index=False)
-    
+
+        # Ignore non-suspicious ports
+        if dst_port not in SUSPICIOUS_PORTS:
+            return
+
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+        location = get_geo(src_ip)
+
+        blocked = False
+
+        # Create entry if first time seen
+        if src_ip not in blocked_ips:
+
+            blocked_ips[src_ip] = {
+                "count": 0,
+                "status": "monitoring",
+                "first_seen": timestamp
+            }
+
+        # Increase attempt counter
+        blocked_ips[src_ip]["count"] += 1
+
+        attempt_count = blocked_ips[src_ip]["count"]
+
+        # Detect attack type
+        attack_type, severity = detect_attack_type(
+            src_ip,
+            dst_port,
+            packet
+        )
+
+        logger.info(
+            f"[ALERT] "
+            f"{src_ip} "
+            f"-> Port {dst_port} "
+            f"| {attack_type} "
+            f"| Severity: {severity} "
+            f"| Attempt #{attempt_count}"
+        )
+
+        # Save alert
+        alert = pd.DataFrame([[
+            timestamp,
+            src_ip,
+            dst_port,
+            attack_type,
+            severity,
+            location,
+            blocked,
+            attempt_count
+        ]],
+        columns=[
+            "timestamp",
+            "src_ip",
+            "dst_port",
+            "attack_type",
+            "severity",
+            "location",
+            "blocked",
+            "attempt_count"
+        ])
+
+        alert.to_csv(
+            ALERT_CSV,
+            mode="a",
+            header=False,
+            index=False
+        )
+
+        # Block attacker
+        if attempt_count >= BLOCK_THRESHOLD:
+
+            blocked = True
+
+            blocked_ips[src_ip]["status"] = "blocked"
+
+            logger.warning(
+                f"[BLOCK] "
+                f"{src_ip} "
+                f"blocked after "
+                f"{attempt_count} attempts"
+            )
+
+            block_ip_firewall(src_ip)
+
+            send_email_alert(
+                src_ip,
+                location
+            )
+
+            blocked_alert = pd.DataFrame([[
+                timestamp,
+                src_ip,
+                dst_port,
+                attack_type,
+                severity,
+                location,
+                blocked,
+                attempt_count
+            ]],
+            columns=[
+                "timestamp",
+                "src_ip",
+                "dst_port",
+                "attack_type",
+                "severity",
+                "location",
+                "blocked",
+                "attempt_count"
+            ])
+
+            blocked_alert.to_csv(
+                ALERT_CSV,
+                mode="a",
+                header=False,
+                index=False
+            )
+
     except Exception as e:
-        logger.error(f"Error processing packet: {str(e)}")
+
+        logger.error(
+            f"Error processing packet: {str(e)}"
+        )
 
 # ---------------------------
 # STATISTICS
