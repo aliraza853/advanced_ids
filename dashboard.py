@@ -120,6 +120,32 @@ def create_location_chart(df):
 
     return fig
 
+def create_location_chart(df):
+    """Create bar chart of alerts by location"""
+
+    if df.empty or "location" not in df.columns:
+        return go.Figure().add_annotation(text="No data available")
+
+    location_counts = df["location"].value_counts().head(10)
+
+    fig = px.bar(
+        x=location_counts.index,
+        y=location_counts.values,
+        title="Top 10 Locations",
+        labels={
+            "x": "Location",
+            "y": "Alerts"
+        },
+        color=location_counts.values,
+        color_continuous_scale="Blues"
+    )
+
+    fig.update_layout(
+        height=400,
+        xaxis_tickangle=-45
+    )
+
+    return fig
 def create_attack_type_chart(df):
     """Create pie chart of detected attack types"""
 
@@ -227,7 +253,7 @@ app.layout = dbc.Container([
     ], className="mb-4"),
     
     # Charts Row 2
-   # Charts Row 2
+
 dbc.Row([
     dbc.Col([
         dcc.Graph(id="alerts-timeline-graph")
